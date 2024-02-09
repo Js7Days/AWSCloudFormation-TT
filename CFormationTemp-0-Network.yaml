@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: 2010-09-09 #Current Template
+Description: Network Setup
+
+Parameters:
+  checkVPC:
+    Description: Enter IP range (CIDR notation) for this VPC
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 172.20.0.0/16
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
+
+  checkVPCPUBSUB:
+    Description: Enter IP range (CIDR notation) for the Public Subnet
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 172.20.0.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
+
+Resources:
+  cfVPC: #VPC
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref checkVPC
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: cf-vpc
+
+  cfIGW: #Internet Gateway
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: cf-igw
+
+  cfIGWA: #Attach Internet Gateway to VPC
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref cfIGW
+      VpcId: !Ref cfVPC
+
+  cfVPCPUB: #Public Subnet
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref checkVPCPUBSUB
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: cf-vpc-pub
+      VpcId: !Ref cfVPC
+
+  cfVPCPUBROUTES: #Create Route Table
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: cf-vpc-rt-public
+      VpcId: !Ref cfVPC
+
+  cfVPCPUBPUBLICRT: #Add a Public Route to the Route Table
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref cfIGW
+      RouteTableId: !Ref cfVPCPUBROUTES
+
+  cfVPCPUBROUTEA: #Associate Public Subnet with Public RT
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref cfVPCPUBROUTES
+      SubnetId: !Ref cfVPCPUB
+
+Outputs:
+  cfVPC:
+    Description: VPC ID
+    Value:
+      Ref: cfVPC
+    Export:
+      Name:
+        stacNetwork-cfVPC
+  cfVPCPUB:
+    Description: Public Subnet
+    Value:
+      Ref: cfVPCPUB
+    Export:
+      Name:
+        stacNetwork-cfVPCPUB

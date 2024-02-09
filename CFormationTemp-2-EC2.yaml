@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: 2010-09-09 #Current Template
+Description: Webserver EC2 Rollout
+
+Parameters:
+  instType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t3.medium
+    AllowedValues:
+    - t2.micro
+    - t2.small
+    - t2.medium
+    - t3.micro
+    - t3.small
+    - t3.medium
+  
+  kpNAME:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
+Mappings:
+  AWSInstanceType2Arch:
+    t2.micro:
+      Arch: HVM64
+    t2.small:
+      Arch: HVM64
+    t2.medium:
+      Arch: HVM64
+    t3.micro:
+      Arch: HVM64
+    t3.small:
+      Arch: HVM64
+    t3.medium:
+      Arch: HVM64
+  AWSRegionArch2AMI:
+    us-east-1:
+      HVM64: ami-6869aa05
+    us-west-2:
+      HVM64: ami-7172b611
+
+Resources:
+  ec2WEBSERVER:
+    Type: AWS::EC2::Instance
+    Properties:
+      #DisableApiTermination: true
+      InstanceType:
+        Ref: instType
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !ImportValue stacSecurity-sgWEB
+            - !ImportValue stacSecurity-sgPING
+          SubnetId: !ImportValue stacNetwork-cfVPCPUB
+      KeyName:
+        Ref: kpNAME
+      ImageId:
+        Fn::FindInMap:
+        - AWSRegionArch2AMI
+        - Ref: AWS::Region
+        - Fn::FindInMap:
+          - AWSInstanceType2Arch
+          - Ref: instType
+          - Arch
+      Tags:
+        - Key: "Name"
+          Value: "cf-ws"
+        - Key: "Type"
+          Value: "Webserver"
+        - Key: "Shutdown"
+          Value: "False"
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y # good practice to update existing packages
+          yum install -y httpd # install web server 
+          systemctl start httpd
+          systemctl enable httpd
+          echo "Hello World" > /var/www/html/index.html
+
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value:
+      Ref: ec2WEBSERVER
+  AZ:
+    Description: Availability Zone of the newly created EC2 instance
+    Value:
+      Fn::GetAtt:
+      - ec2WEBSERVER
+      - AvailabilityZone
+  PublicDNS:
+    Description: Public DNSName of the newly created EC2 instance
+    Value:
+      Fn::GetAtt:
+      - ec2WEBSERVER
+      - PublicDnsName
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value:
+      Fn::GetAtt:
+      - ec2WEBSERVER
+      - PublicIp

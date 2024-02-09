@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: 2010-09-09 #Current Template
+Description: Security Groups Setup
+
+Parameters:
+  SSHLOC:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
+
+Resources:
+  sgPING:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: cf-sg-Ping
+      GroupDescription: SG to test ping
+      VpcId: !ImportValue stacNetwork-cfVPC
+      SecurityGroupIngress:
+        - IpProtocol: icmp
+          FromPort: 8
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+
+  sgWEB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: cf-sg-web
+      GroupDescription: Enable SSH access (22) and HTTP (80)
+      VpcId: !ImportValue stacNetwork-cfVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp:
+          Ref: SSHLOC
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+
+Outputs:
+  sgPING:
+    Description: Allow Ping Security Group
+    Value:
+      Ref: sgPING
+    Export:
+      Name:
+        stacSecurity-sgPING
+  sgWEB:
+    Description: Security Group allow SSH, 80
+    Value:
+      Ref: sgWEB
+    Export:
+      Name:
+        stacSecurity-sgWEB
