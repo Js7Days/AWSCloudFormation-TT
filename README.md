@@ -24,6 +24,6 @@ cd AWSCloudFormation-TT
 8. Review and Create -> Next -> Click Submit
 
 ## About me
-Name: Thong Thao
-Student ID: 
+Name: Thong Thao <br>
+Student ID: <br>
 TAFE Student
