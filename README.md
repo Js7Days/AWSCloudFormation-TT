@@ -22,3 +22,8 @@ cd AWSCloudFormation-TT
 6. Specify your stack name and parameters.
 7. Configure stack options tags, permissions stack 
 8. Review and Create -> Next -> Click Submit
+
+## About me
+Name: Thong Thao
+Student ID: 
+TAFE Student
