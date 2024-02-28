@@ -1,6 +1,6 @@
-# Web Server EC2 Instance Deployment
+# AWS CloudFormation Deployment
 ## Description: 
-This package contains a CloudFormation template (CFormationTemp-0-Network.yaml, CFormationTemp-1-Security.yaml and CFormationTemp-2-EC2.yaml ) to deploy a web server EC2 instance on AWS. The template provisions an EC2 instance with Apache web server pre-installed, configured, and serving a basic webpage.
+This package contains a CloudFormation template (CFormationTemp-0-Network.yaml, CFormationTemp-1-Security.yaml and CFormationTemp-2-EC2.yaml ) to deploy a web server EC2 instance on AWS.
 
 ## How to Run the Containerized Application
 ### Prerequisites
@@ -9,10 +9,10 @@ This package contains a CloudFormation template (CFormationTemp-0-Network.yaml, 
 
 ### Steps to Deploy the Web Server EC2 Instance
 1. Clone this repository to your local machine:
-git clone https://github.com/Js7Days/AWSCloudFormation-TT.git
+wget or git clone https://github.com/Js7Days/AWSCloudFormation-TT.git
 2. Navigate to the repository directory:
 cd AWSCloudFormation-TT
-3. Open YAML Sript:
+3. There are 3 YAML Sript:
   * CFormationTemp-0-Network.yaml
   * CFormationTemp-1-Security.yaml 
   * CFormationTemp-2-EC2.yaml
@@ -25,5 +25,5 @@ cd AWSCloudFormation-TT
 
 ## About me
 Name: Thong Thao <br>
-Student ID: <br>
+Student ID:  <br>
 TAFE Student
