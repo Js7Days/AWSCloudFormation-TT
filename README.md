@@ -7,7 +7,8 @@ This package contains a CloudFormation template (CFormationTemp-0-Network.yaml, 
 * AWS CLI installed and configured with appropriate IAM permissions.
 * Docker installed (optional, for running locally).
 
-### Steps to Download the YML Sript.
+### Steps to Download the YML Script.
+#### For Linux 
 1. Clone this repository to your local machine:
 wget or git clone https://github.com/Js7Days/AWSCloudFormation-TT.git
 2. Navigate to the repository directory:
@@ -17,7 +18,7 @@ cd AWSCloudFormation-TT
   * CFormationTemp-1-Security.yaml 
   * CFormationTemp-2-EC2.yaml
   #### For Microsoft Windows
-Copy and paste this link to browser:  https://github.com/Js7Days/AWSCloudFormation-TT/archive/refs/heads/main.zip
+Copy and paste this link to the browser:  https://github.com/Js7Days/AWSCloudFormation-TT/archive/refs/heads/main.zip
 ### Steps to Deploy on CloudFormation console.
 1. Deploy the CloudFormation stack using the CloudFormation console:
    https://console.aws.amazon.com/cloudformation/ 
